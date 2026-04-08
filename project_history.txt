@@ -1,0 +1,55 @@
+    1  ip a
+    2  nmcli device status
+    3  nmcli con mod eth0 ipv4.addresses 192.168.1.100/24 ipv4.gateway 192.168.1.1 ipv4.dns "8.8.8.8" ipv4.method manual
+    4  nmcli con up eth0
+    5  hostnamectl set-hostname mephi-2026.domain.local
+    6  ip addr
+    7  cd /tmp
+    8  ls -l
+    9  dnf install -y nginx libcap-ng-utils
+   10  dnf download tcpdump
+   11  rpm -ivh tcpdump*.rpm
+   12  tcpdump --version
+   13  cd .
+   14  ls
+   15  ping -c 4 8.8.8.8 > network_check.txt
+   16  cat network_check.txt
+   17  cd ..
+   18  pwd
+   19  df -h
+   20  fdisk -l
+   21  echo -e "n\np\n1\n\n\nw" | fdisk /dev/sdb
+   22  mkfs.ext4 -L MEPHI_DATA /dev/sdb1
+   23  mkdir -p /data/mephi-web
+   24  cat /etc/fstab
+   25  echo "LABEL=MEPHI_DATA /data/mephi-web ext4 defaults 0 2" >> /etc/fstab
+   26  mount -a
+   27  df -h
+   28  cd /data/mephi-web
+   29  ls -la
+   30  cd ~
+   31  groupadd mephi-devs
+   32  useradd -m -G mephi-devs mephi-admin
+   33  echo 'mephi-admin:P@ssw0rd2026' | chpasswd
+   34  chown mephi-admin:mephi-devs /data/mephi-web
+   35  chmod 2775 /data/mephi-web
+   36  dnf install -y policycoreutils-python-utils
+   37  semanage fcontext -a -t httpd_sys_content_t "/data/mephi-web(/.*)?"
+   38  restorecon -Rv /data/mephi-web
+   39  sl
+   40  ls
+   41  sed -i 's|root         /usr/share/nginx/html;|root         /data/mephi-web;|g' /etc/nginx/nginx.conf
+   42  systemctl enable nginx
+   43  systemctl restart nginx
+   44  systemctl status nginx
+   45  chmod -s /usr/sbin/tcpdump
+   46  setcap 'cap_net_raw,cap_net_admin+ep' /usr/sbin/tcpdump
+   47  sudo -u mephi-admin tcpdump --help
+   48  echo "root" > /etc/ssh/denied_users
+   49  sed -i '2i auth required pam_listfile.so item=user sense=deny file=/etc/ssh/denied_users onerr=succeed' /etc/pam.d/login
+   50  sed -i '2i auth required pam_listfile.so item=user sense=deny file=/etc/ssh/denied_users onerr=succeed' /etc/pam.d/sshd
+   51  sed -i 's/^#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+   52  systemctl restart sshd
+   53  sudo -u mephi-admin bash -c 'echo "Hello from Student: М255638" > /data/mephi-web/index.html'
+   54  curl http://localhost
+   55  history > ~/project_history.txt
